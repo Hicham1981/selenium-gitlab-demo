@@ -1,0 +1,21 @@
+image: maven:3.9.4-eclipse-temurin-17
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  DISPLAY: ":99"
+
+stages:
+  - test
+
+selenium_tests:
+  stage: test
+  services:
+    - name: selenium/standalone-chrome
+      alias: selenium
+  before_script:
+    - apt-get update && apt-get install -y xvfb python3
+  script:
+    - Xvfb :99 &
+    - python3 -m http.server 8000 --directory web/ &
+    - sleep 2
+    - mvn clean test
